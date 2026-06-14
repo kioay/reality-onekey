@@ -34,6 +34,19 @@ Recommended OS: Debian 12.
 
 ## Quick Start
 
+Run directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh -o reality-onekey.sh
+sudo bash reality-onekey.sh --host <server-ip-or-domain>
+```
+
+Or run it in one line:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- --host <server-ip-or-domain>
+```
+
 Upload the script to your VPS, then run:
 
 ```bash
