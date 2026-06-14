@@ -59,6 +59,12 @@ Example:
 sudo bash reality-onekey.sh --host 203.0.113.10
 ```
 
+By default, the camouflage domain is:
+
+```text
+www.cloudflare.com
+```
+
 Use a custom port or SNI:
 
 ```bash
@@ -134,6 +140,10 @@ curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-o
   --dest www.microsoft.com:443
 ```
 
+Here `--sni` is the camouflage domain shown to the client. `--dest` is the
+camouflage target reached by the server. If `--dest` is omitted, it defaults to
+`<sni>:443`.
+
 Use a custom client name:
 
 ```bash
@@ -155,8 +165,8 @@ sudo bash reality-onekey.sh \
 ```text
 --host <ip-or-domain>       Server address used in the client link.
 --port <port>               Listen TCP port. Default: 443.
---sni <domain>              REALITY serverName/SNI. Default: www.cloudflare.com.
---dest <host:port>          REALITY target. Default: <sni>:443.
+--sni <domain>              Camouflage domain / REALITY SNI. Default: www.cloudflare.com.
+--dest <host:port>          Camouflage destination. Default: <sni>:443.
 --remark <name>             Client link name. Default: reality.
 --uuid <uuid>               Use an existing UUID instead of generating one.
 --short-id <hex>            Use an existing REALITY shortId instead of generating one.

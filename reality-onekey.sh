@@ -30,8 +30,8 @@ Usage:
 Options:
   --host <ip-or-domain>       Server address used in the client link.
   --port <port>               Listen TCP port. Default: 443.
-  --sni <domain>              REALITY serverName/SNI. Default: www.cloudflare.com.
-  --dest <host:port>          REALITY target. Default: <sni>:443.
+  --sni <domain>              Camouflage domain / REALITY SNI. Default: www.cloudflare.com.
+  --dest <host:port>          Camouflage destination. Default: <sni>:443.
   --remark <name>             Client link name. Default: reality.
   --uuid <uuid>               Use an existing UUID instead of generating one.
   --short-id <hex>            Use an existing REALITY shortId instead of generating one.
@@ -428,8 +428,8 @@ Server:
   flow: xtls-rprx-vision
   transport: tcp
   security: reality
-  sni/serverName: ${SERVER_NAME}
-  destination: ${DEST}
+  camouflage domain (SNI/serverName): ${SERVER_NAME}
+  camouflage destination: ${DEST}
   fingerprint: chrome
   publicKey: ${PUBLIC_KEY}
   shortId: ${SHORT_ID}
@@ -451,6 +451,8 @@ EOF
   log "  ${CLIENT_LINK_OUT}"
   log "  ${SING_BOX_OUT}"
   log "  ${MIHOMO_OUT}"
+  log "Camouflage domain: ${SERVER_NAME}"
+  log "Camouflage destination: ${DEST}"
   log "The generated VLESS link contains access credentials. Do not publish it."
   printf '\n%s\n\n' "${link}"
   log "Remember to open tcp/${PORT} in the VPS provider security group."
