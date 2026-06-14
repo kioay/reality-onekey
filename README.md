@@ -73,6 +73,55 @@ The script saves client details to:
 
 Keep this file private.
 
+## Configuration Examples
+
+Default setup with a server IP:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- \
+  --host 203.0.113.10
+```
+
+Default setup with your own domain:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- \
+  --host vpn.example.com
+```
+
+Use a non-443 port:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- \
+  --host 203.0.113.10 \
+  --port 8443
+```
+
+Use a custom REALITY SNI and destination:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- \
+  --host 203.0.113.10 \
+  --sni www.microsoft.com \
+  --dest www.microsoft.com:443
+```
+
+Use a custom client name:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kioay/reality-onekey/main/reality-onekey.sh | sudo bash -s -- \
+  --host 203.0.113.10 \
+  --remark my-reality-node
+```
+
+Reconfigure an existing Xray installation without reinstalling Xray:
+
+```bash
+sudo bash reality-onekey.sh \
+  --host 203.0.113.10 \
+  --skip-install
+```
+
 ## Options
 
 ```text
