@@ -1,5 +1,6 @@
 # Generated credentials and local secrets
 reality-client.txt
+reality-client/
 *.env
 .env
 *.key

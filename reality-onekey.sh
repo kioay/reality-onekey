@@ -6,6 +6,10 @@ XRAY_INSTALL_URL="https://github.com/XTLS/Xray-install/raw/main/install-release.
 XRAY_BIN="/usr/local/bin/xray"
 XRAY_CONFIG="/usr/local/etc/xray/config.json"
 CLIENT_OUT="/root/reality-client.txt"
+CLIENT_DIR="/root/reality-client"
+CLIENT_LINK_OUT="${CLIENT_DIR}/vless-link.txt"
+SING_BOX_OUT="${CLIENT_DIR}/sing-box.json"
+MIHOMO_OUT="${CLIENT_DIR}/mihomo.yaml"
 
 PORT="443"
 SERVER_NAME="www.cloudflare.com"
@@ -308,7 +312,7 @@ restart_xray() {
 }
 
 safe_remark() {
-  printf '%s' "${REMARK}" | tr ' /?#&%' '______'
+  printf '%s' "${REMARK}" | LC_ALL=C tr -c 'A-Za-z0-9._-' '_'
 }
 
 uri_host() {
@@ -325,9 +329,96 @@ write_client_output() {
   r="$(safe_remark)"
   link="vless://${UUID}@${h}:${PORT}?encryption=none&flow=xtls-rprx-vision&security=reality&sni=${SERVER_NAME}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp&headerType=none&spx=%2F#${r}"
 
+  install -d -m 0700 "${CLIENT_DIR}"
+  printf '%s\n' "${link}" > "${CLIENT_LINK_OUT}"
+
+  cat > "${SING_BOX_OUT}" <<EOF
+{
+  "log": {
+    "level": "info"
+  },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 2080
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "${r}",
+      "server": "${HOST}",
+      "server_port": ${PORT},
+      "uuid": "${UUID}",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "${SERVER_NAME}",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "${PUBLIC_KEY}",
+          "short_id": "${SHORT_ID}"
+        }
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true
+  }
+}
+EOF
+
+  cat > "${MIHOMO_OUT}" <<EOF
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+
+proxies:
+  - name: "${r}"
+    type: vless
+    server: "${HOST}"
+    port: ${PORT}
+    uuid: "${UUID}"
+    network: tcp
+    udp: true
+    tls: true
+    flow: xtls-rprx-vision
+    servername: "${SERVER_NAME}"
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: "${PUBLIC_KEY}"
+      short-id: "${SHORT_ID}"
+
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies:
+      - "${r}"
+      - DIRECT
+
+rules:
+  - MATCH,Proxy
+EOF
+
   cat > "${CLIENT_OUT}" <<EOF
 VLESS REALITY client link:
 ${link}
+
+Generated client files:
+  VLESS link: ${CLIENT_LINK_OUT}
+  sing-box: ${SING_BOX_OUT}
+  mihomo/Clash.Meta: ${MIHOMO_OUT}
 
 Server:
   address: ${HOST}
@@ -352,10 +443,14 @@ Service:
   journalctl -u xray -f
 EOF
 
-  chmod 0600 "${CLIENT_OUT}"
+  chmod 0600 "${CLIENT_OUT}" "${CLIENT_LINK_OUT}" "${SING_BOX_OUT}" "${MIHOMO_OUT}"
 
   printf '\n'
   log "Done. Client details were saved to ${CLIENT_OUT}"
+  log "Generated client files:"
+  log "  ${CLIENT_LINK_OUT}"
+  log "  ${SING_BOX_OUT}"
+  log "  ${MIHOMO_OUT}"
   log "The generated VLESS link contains access credentials. Do not publish it."
   printf '\n%s\n\n' "${link}"
   log "Remember to open tcp/${PORT} in the VPS provider security group."

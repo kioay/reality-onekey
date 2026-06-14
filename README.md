@@ -73,6 +73,34 @@ The script saves client details to:
 
 Keep this file private.
 
+It also generates ready-to-use client files:
+
+```text
+/root/reality-client/vless-link.txt
+/root/reality-client/sing-box.json
+/root/reality-client/mihomo.yaml
+```
+
+Copy them from the VPS with `scp`:
+
+```bash
+scp root@<server-ip-or-domain>:/root/reality-client/vless-link.txt .
+scp root@<server-ip-or-domain>:/root/reality-client/sing-box.json .
+scp root@<server-ip-or-domain>:/root/reality-client/mihomo.yaml .
+```
+
+If your SSH port is not `22`, add `-P <ssh-port>`:
+
+```bash
+scp -P <ssh-port> root@<server-ip-or-domain>:/root/reality-client/mihomo.yaml .
+```
+
+Client usage:
+
+- v2rayN, Nekoray, Shadowrocket, Stash: import `vless-link.txt` or paste the link.
+- sing-box: use `sing-box.json` as a local mixed proxy on `127.0.0.1:2080`.
+- mihomo/Clash.Meta: import `mihomo.yaml`, which exposes a local mixed proxy on `127.0.0.1:7890`.
+
 ## Configuration Examples
 
 Default setup with a server IP:
